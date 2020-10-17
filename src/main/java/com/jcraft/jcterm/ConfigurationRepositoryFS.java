@@ -21,107 +21,105 @@
  */
 
 package com.jcraft.jcterm;
-import java.io.*;
-import java.util.Vector;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
- * This class will save the configuration into  ~/.ssh/jcterm.properties
- * file in property file format.
+ * This class will save the configuration into ~/.ssh/jcterm.properties file in
+ * property file format.
  *
  * @see com.jcraft.jcterm.Configuration
  * @see com.jcraft.jcterm.ConfigurationRepository
  */
 public class ConfigurationRepositoryFS implements ConfigurationRepository {
 
-  private File ssh_home = new File(System.getProperty("user.home"), ".ssh");
-  private File jcterm_prop = new File(ssh_home, "jcterm.properties");
+    private File ssh_home = new File(System.getProperty("user.home"), ".ssh");
+    private File jcterm_prop = new File(ssh_home, "jcterm.properties");
 
-  public Configuration load(String name){
-    Configuration conf = new Configuration();
-    conf.name = name;
+    public Configuration load(String name) {
+        Configuration conf = new Configuration();
+        conf.name = name;
 
-    java.util.Properties prop = new java.util.Properties();
-    InputStream in = null;
+        java.util.Properties prop = new java.util.Properties();
+        InputStream in = null;
 
-    try{
-      in = new FileInputStream(jcterm_prop);
-      prop.load(in);
+        try {
+            in = new FileInputStream(jcterm_prop);
+            prop.load(in);
 
-      String key="jcterm."+name+".font_size";
-      if(prop.get(key)!=null){
-        try{
-          conf.font_size = Integer.parseInt((String)prop.get(key));
+            String key = "jcterm." + name + ".font_size";
+            if (prop.get(key) != null) {
+                try {
+                    conf.font_size = Integer.parseInt((String) prop.get(key));
+                } catch (Exception ee) {
+                    // ignore it because of loading incompatible data.
+                }
+            }
+
+            try {
+                key = "jcterm." + name + ".fg_bg";
+                if (prop.get(key) != null)
+                    conf.fg_bg = ((String) prop.get(key)).split(",");
+            } catch (Exception ee) {
+                // ignore it because of loading incompatible data.
+            }
+
+            try {
+                key = "jcterm." + name + ".destination";
+                if (prop.get(key) != null)
+                    conf.destinations = ((String) prop.get(key)).split(",");
+            } catch (Exception ee) {
+                // ignore it because of loading incompatible data.
+            }
+
+            in.close();
+        } catch (Exception e) {
+            // the file does not exist.
         }
-        catch(Exception ee){
-          // ignore it because of loading incompatible data.
+
+        return conf;
+    }
+
+    public void save(Configuration conf) {
+        java.util.Properties prop = new java.util.Properties();
+        InputStream in = null;
+        try {
+            in = new FileInputStream(jcterm_prop);
+            prop.load(in);
+            in.close();
+        } catch (IOException e) {
+            // the file does not exist.
         }
-      }
 
-      try{
-        key = "jcterm."+name+".fg_bg";
-        if(prop.get(key) != null)
-          conf.fg_bg = ((String)prop.get(key)).split(",");
-      }
-      catch(Exception ee){
-        // ignore it because of loading incompatible data.
-      }
+        String name = conf.name;
 
-      try{
-        key = "jcterm."+name+".destination";
-        if(prop.get(key) != null)
-          conf.destinations = ((String)prop.get(key)).split(",");
-      }
-      catch(Exception ee){
-        // ignore it because of loading incompatible data.
-      }
+        prop.setProperty("jcterm." + name + ".destination", join(conf.destinations));
 
-      in.close();
-    }
-    catch(Exception e){
-      // the file does not exist.
+        prop.setProperty("jcterm." + name + ".font_size", new Integer(conf.font_size).toString());
+
+        prop.setProperty("jcterm." + name + ".fg_bg", join(conf.fg_bg));
+
+        try {
+            OutputStream out = new FileOutputStream(jcterm_prop);
+            prop.store(out, "");
+            out.close();
+        } catch (IOException e) {
+            // failed to save file.
+        }
     }
 
-    return conf;
-  }
-
-  public void save(Configuration conf){
-    java.util.Properties prop = new java.util.Properties();
-    InputStream in = null;
-    try{
-      in = new FileInputStream(jcterm_prop);
-      prop.load(in);
-      in.close();
+    String join(String[] array) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < array.length; i++) {
+            builder.append(array[i]);
+            if (i + 1 < array.length)
+                builder.append(",");
+        }
+        return builder.toString();
     }
-    catch(IOException e){
-      // the file does not exist.
-    }
-
-    String name = conf.name;
-
-    prop.setProperty("jcterm."+name+".destination", join(conf.destinations));
-
-    prop.setProperty("jcterm."+name+".font_size",
-                     new Integer(conf.font_size).toString());
-
-    prop.setProperty("jcterm."+name+".fg_bg", join(conf.fg_bg));
-
-    try{
-     OutputStream out = new FileOutputStream(jcterm_prop);
-     prop.store(out, "");
-     out.close();
-    }
-    catch(IOException e){
-      // failed to save file.
-    }
-  }
-
-  String join(String[] array){
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i < array.length; i++) {
-      builder.append(array[i]);
-      if(i+1<array.length)
-        builder.append(",");
-    }
-    return builder.toString();
-  }
 }

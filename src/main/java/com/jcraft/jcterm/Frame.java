@@ -23,15 +23,21 @@
 package com.jcraft.jcterm;
 
 interface Frame {
-  final int SHELL=0;
-  final int SFTP=1;
-  final int EXEC=2;
+    final int SHELL = 0;
+    final int SFTP = 1;
+    final int EXEC = 2;
 
-  void openFrame(int mode, String configName);
-  void setTitle(String name);
-  void setVisible(boolean visible);
-  void setSize(int w, int h);
-  int getWidth();
-  int getHeight();
-  void dispose();
+    void openFrame(int mode, String configName);
+
+    void setTitle(String name);
+
+    void setVisible(boolean visible);
+
+    void setSize(int w, int h);
+
+    int getWidth();
+
+    int getHeight();
+
+    void dispose();
 }

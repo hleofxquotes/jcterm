@@ -22,6 +22,6 @@
 
 package com.jcraft.jcterm;
 
-public interface Splash{
-  void draw(Object image, int width, int height);
+public interface Splash {
+    void draw(Object image, int width, int height);
 }

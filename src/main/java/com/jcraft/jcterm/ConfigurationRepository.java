@@ -23,13 +23,14 @@
 package com.jcraft.jcterm;
 
 /**
- * This interface abstracts where the configuration is stored to and
- * retrived from.
+ * This interface abstracts where the configuration is stored to and retrived
+ * from.
  *
  * @see com.jcraft.jcterm.Configuration
  * @see com.jcraft.jcterm.ConfigurationRepositoryFS
  */
 public interface ConfigurationRepository {
-  Configuration load(String name);
-  void save(Configuration conf);
+    Configuration load(String name);
+
+    void save(Configuration conf);
 }

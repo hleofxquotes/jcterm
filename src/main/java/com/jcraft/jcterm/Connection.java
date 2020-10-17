@@ -25,13 +25,13 @@ package com.jcraft.jcterm;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public interface Connection{
-  
-  InputStream getInputStream();
+public interface Connection {
 
-  OutputStream getOutputStream();
+    InputStream getInputStream();
 
-  void requestResize(Term term);
+    OutputStream getOutputStream();
 
-  void close();
+    void requestResize(Term term);
+
+    void close();
 }
